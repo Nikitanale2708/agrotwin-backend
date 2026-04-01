@@ -15,11 +15,12 @@ from fastapi.staticfiles import StaticFiles
 # 🚫 Swagger removed (production)
 app = FastAPI()
 
-# ✅ Static images
-app.mount("/images", StaticFiles(directory="../uploads"), name="images")
-
-UPLOAD_FOLDER = "../uploads"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# ✅ Static images
+app.mount("/images", StaticFiles(directory=UPLOAD_FOLDER), name="images")
 
 
 @app.get("/")
