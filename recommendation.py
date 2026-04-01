@@ -1,13 +1,17 @@
+import os
 import joblib
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "model")
+
 # ✅ Load models
-pest_model = joblib.load("../model/pesticide_model.pkl")
-fert_model = joblib.load("../model/fertilizer_model.pkl")
+pest_model = joblib.load(os.path.join(MODEL_DIR, "pesticide_model.pkl"))
+fert_model = joblib.load(os.path.join(MODEL_DIR, "fertilizer_model.pkl"))
 
 # ✅ Load encoders
-le_soil = joblib.load("../model/le_soil.pkl")
-le_crop = joblib.load("../model/le_crop.pkl")
-le_target = joblib.load("../model/le_target.pkl")
+le_soil = joblib.load(os.path.join(MODEL_DIR, "le_soil.pkl"))
+le_crop = joblib.load(os.path.join(MODEL_DIR, "le_crop.pkl"))
+le_target = joblib.load(os.path.join(MODEL_DIR, "le_target.pkl"))
 
 # ✅ Disease encoding
 disease_map = {

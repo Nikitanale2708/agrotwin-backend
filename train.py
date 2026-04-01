@@ -5,13 +5,19 @@ from torchvision import datasets, transforms
 import timm
 from collections import Counter
 
+import os
+
 # ---------------- DEVICE ----------------
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "model")
+os.makedirs(MODEL_DIR, exist_ok=True)
+
 # ---------------- PATHS ----------------
-train_dir = "../dataset/train"
-val_dir   = "../dataset/val"
+train_dir = os.path.join(BASE_DIR, "..", "dataset", "train")
+val_dir   = os.path.join(BASE_DIR, "..", "dataset", "val")
 
 # ---------------- TRANSFORMS (FIXED ✅) ----------------
 transform_train = transforms.Compose([
@@ -116,11 +122,11 @@ for epoch in range(epochs):
     # 🔥 SAVE BEST MODEL ONLY
     if val_acc > best_val_acc:
         best_val_acc = val_acc
-        torch.save(model.state_dict(), "../model/model.pth")
+        torch.save(model.state_dict(), os.path.join(MODEL_DIR, "model.pth"))
         print("✅ Best model saved!")
 
 # ---------------- SAVE CLASS NAMES ----------------
-with open("../model/classes.txt", "w") as f:
+with open(os.path.join(MODEL_DIR, "classes.txt"), "w") as f:
     for c in class_names:
         f.write(c + "\n")
 

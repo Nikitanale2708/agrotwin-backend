@@ -3,11 +3,15 @@ import timm
 from torchvision import transforms
 from PIL import Image
 import numpy as np
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "model")
 
 device = torch.device("cpu")
 torch.set_num_threads(1)
 
-with open("../model/classes.txt", "r") as f:
+with open(os.path.join(MODEL_DIR, "classes.txt"), "r") as f:
     class_names = [line.strip() for line in f.readlines()]
 
 model = timm.create_model(
@@ -16,7 +20,7 @@ model = timm.create_model(
     num_classes=len(class_names)
 )
 
-model.load_state_dict(torch.load("../model/model.pth", map_location=device))
+model.load_state_dict(torch.load(os.path.join(MODEL_DIR, "model.pth"), map_location=device))
 model.eval()
 
 # ✅ FIXED TRANSFORM

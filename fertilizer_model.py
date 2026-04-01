@@ -61,9 +61,15 @@ acc = accuracy_score(y_test, y_pred)
 print(f"✅ Model Accuracy: {round(acc * 100, 2)}%")
 
 # ---------------- SAVE ----------------
-joblib.dump(model, "../model/fertilizer_model.pkl")
-joblib.dump(le_soil, "../model/le_soil.pkl")
-joblib.dump(le_crop, "../model/le_crop.pkl")
-joblib.dump(le_target, "../model/le_target.pkl")
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "model")
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+joblib.dump(model, os.path.join(MODEL_DIR, "fertilizer_model.pkl"))
+joblib.dump(le_soil, os.path.join(MODEL_DIR, "le_soil.pkl"))
+joblib.dump(le_crop, os.path.join(MODEL_DIR, "le_crop.pkl"))
+joblib.dump(le_target, os.path.join(MODEL_DIR, "le_target.pkl"))
 
 print("✅ Fertilizer model trained successfully!")

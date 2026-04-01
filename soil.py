@@ -18,8 +18,11 @@ def get_soil_data(lat, lon):
         # 🔥 Normalize
         district = district.lower().replace(" district", "").strip()
 
+        import os
+
         # 📂 Load soil DB
-        with open("soil_data.json") as f:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(base_dir, "soil_data.json")) as f:
             soil_db = json.load(f)
 
         # 🔍 Smart match

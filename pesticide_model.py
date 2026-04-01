@@ -14,6 +14,12 @@ X['disease'] = X['disease'].astype('category').cat.codes
 model = DecisionTreeClassifier()
 model.fit(X, y)
 
-joblib.dump(model, "../model/pesticide_model.pkl")
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "model")
+os.makedirs(MODEL_DIR, exist_ok=True)
+
+joblib.dump(model, os.path.join(MODEL_DIR, "pesticide_model.pkl"))
 
 print("✅ Pesticide model ready")
