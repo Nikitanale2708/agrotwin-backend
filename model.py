@@ -5,6 +5,7 @@ from PIL import Image
 import numpy as np
 
 device = torch.device("cpu")
+torch.set_num_threads(1)
 
 with open("../model/classes.txt", "r") as f:
     class_names = [line.strip() for line in f.readlines()]
