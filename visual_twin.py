@@ -52,6 +52,13 @@ def generate_visual_twin(image_path, disease_curve):
     if img is None:
         return []
 
+    # 🔥 Resize huge phone camera images to prevent Render Free Tier Timeouts
+    h, w = img.shape[:2]
+    max_dim = 800
+    if max(h, w) > max_dim:
+        scale = max_dim / max(h, w)
+        img = cv2.resize(img, (int(w * scale), int(h * scale)))
+
     outputs = []
 
     # ✅ unique id for each request
