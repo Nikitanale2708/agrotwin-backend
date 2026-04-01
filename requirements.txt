@@ -3,8 +3,8 @@ fastapi
 uvicorn
 python-multipart
 timm
-torch==2.3.0+cpu
-torchvision==0.18.0+cpu
+torch==2.11.0+cpu
+torchvision
 Pillow
 numpy<2.0.0
 requests
