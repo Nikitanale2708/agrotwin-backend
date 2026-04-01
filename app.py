@@ -7,7 +7,7 @@ from model import predict_disease
 from simulation import digital_twin
 from recommendation import get_recommendation
 from weather import get_weather
-from visual_twin import generate_visual_twin
+from visual_twin import generate_visual_twin, generate_midas_depth
 from soil import get_soil_data
 
 from fastapi.staticfiles import StaticFiles
@@ -54,10 +54,10 @@ def get_color(severity):
 # 🧠 Farmer message
 def get_farmer_message(severity):
     return {
-        "none": "🌿 Aapka fasal healthy hai",
-        "low": "⚠️ Thodi bimari hai, dhyan rakhe",
-        "medium": "❗ Bimari badh rahi hai, ilaaj kare",
-        "high": "🚨 Gambhir bimari hai, turant dawa use kare"
+        "none": "🌿 Your Crop is Healty",
+        "low": "⚠️ Symptoms are avail",
+        "medium": "❗Disease is spreeding, do Needful",
+        "high": "🚨 High risk of Disease on crop"
     }[severity]
 
 
@@ -97,8 +97,11 @@ async def predict(
         # 🔥 Digital Twin
         twin = digital_twin(7, severity, weather)
 
-        # 🔥 Visual Twin
+        # 🔥 Visual Twin (Phases)
         visual = generate_visual_twin(file_path, twin["disease_curve"])
+
+        # 🔥 Structural Midas Depth Twin
+        depth_array = generate_midas_depth(file_path)
 
         # 🔥 Recommendation
         rec = get_recommendation(disease, weather, severity, soil)
@@ -116,6 +119,7 @@ async def predict(
 
             "twin": twin,
             "visual_twin": visual,
+            "depth_map": depth_array,
 
             "weather": weather,
             "soil": soil,

@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 import uuid
+import torch
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
@@ -85,3 +86,58 @@ def generate_visual_twin(image_path, disease_curve):
         })
 
     return outputs
+
+# 🔥 MiDaS 3D DEPTH RECONSTRUCTION
+midas = None
+midas_transforms = None
+device = None
+
+def init_midas():
+    global midas, midas_transforms, device
+    if midas is None:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # Use MiDaS_small to guarantee it runs easily on Free servers without Out-of-Memory crashes
+        midas = torch.hub.load("intel-isl/MiDaS", "MiDaS_small")
+        midas.to(device)
+        midas.eval()
+        midas_transforms = torch.hub.load("intel-isl/MiDaS", "transforms")
+
+def generate_midas_depth(image_path):
+    try:
+        init_midas()
+        
+        img = cv2.imread(image_path)
+        if img is None:
+            return []
+            
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        transform = midas_transforms.small_transform
+        input_batch = transform(img).to(device)
+        
+        with torch.no_grad():
+            prediction = midas(input_batch)
+            
+            # Resampling to 50x50 matrix for 2500 vertex ultra-fast mobile 3D Mesh
+            prediction = torch.nn.functional.interpolate(
+                prediction.unsqueeze(1),
+                size=(50, 50),
+                mode="bicubic",
+                align_corners=False,
+            ).squeeze()
+            
+        depth_map = prediction.cpu().numpy()
+        
+        d_min = depth_map.min()
+        d_max = depth_map.max()
+        if d_max - d_min > 0:
+            depth_map = (depth_map - d_min) / (d_max - d_min)
+            
+        # Convert the float matrix into a flattened list rounded to save bandwidth
+        depth_list = depth_map.flatten().tolist()
+        depth_list = [round(float(v), 3) for v in depth_list]
+        
+        return depth_list
+    except Exception as e:
+        print("MiDaS Depth Error:", e)
+        return []
